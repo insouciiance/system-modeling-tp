@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="SystemModeling.Network.NetworkModel&lt;T&gt;" Collapsed="true">
+    <Position X="3.25" Y="4" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAAAAAAAAAAAAABAAgAAQAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Network\NetworkModel.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="_nodes" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="SystemModeling.Network.NetworkNode&lt;T&gt;" Collapsed="true">
+    <Position X="6.25" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAgAAAAAAAAAAAAAAABAAAQAUAAAAIKAAAAABAAA=</HashCode>
+      <FileName>Network\NetworkNode.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SystemModeling.Network.CreateNode&lt;T&gt;" Collapsed="true">
+    <Position X="6.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAEAAAAAAAAAAQAAAAAEAAAAICACAgABAAA=</HashCode>
+      <FileName>Network\CreateNode.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_factory" />
+      <Field Name="_nodeSelector" />
+      <Field Name="_timeProvider" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SystemModeling.Network.DisposeNode&lt;T&gt;" Collapsed="true">
+    <Position X="6.25" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAAAAAAAIAAAAAAAAAAAUAAAAICAAAAABAAA=</HashCode>
+      <FileName>Network\DisposeNode.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SystemModeling.Network.ProcessNode&lt;T&gt;" Collapsed="true">
+    <Position X="9" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>RAAAABAAAAAAAAAAAAQAAAAARAAEAAAAIGAAAAABAAA=</HashCode>
+      <FileName>Network\ProcessNode.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_nodeProcessor" />
+      <Property Name="NextNodeSelector" />
+      <Property Name="Queue" />
+    </ShowAsAssociation>
+  </Class>
+  <Interface Name="SystemModeling.Collections.IQueue&lt;T&gt;" Collapsed="true">
+    <Position X="11.75" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAABAQAAAAAAAAAAAAQAAAAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>Collections\IQueue.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="SystemModeling.Network.Factories.IJobFactory&lt;T&gt;" Collapsed="true">
+    <Position X="3.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>Network\Factories\IJobFactory.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="SystemModeling.Network.Processors.INetworkNodeProcessor&lt;T&gt;" Collapsed="true">
+    <Position X="8.75" Y="5.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAAAAAAAAAAAAKAAQAAAAAAACAAAAAAAAABAAA=</HashCode>
+      <FileName>Network\Processors\INetworkNodeProcessor.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="SystemModeling.Network.Selectors.INetworkNodeSelector&lt;T&gt;" Collapsed="true">
+    <Position X="8.75" Y="2.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAA=</HashCode>
+      <FileName>Network\Selectors\INetworkNodeSelector.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="SystemModeling.Network.TimeProviders.IProcessingTimeProvider&lt;T&gt;" Collapsed="true">
+    <Position X="6" Y="1.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Network\TimeProviders\IProcessingTimeProvider.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
