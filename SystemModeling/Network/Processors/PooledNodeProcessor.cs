@@ -7,7 +7,7 @@ namespace SystemModeling.Network.Processors;
 
 public class PooledNodeProcessor<T>(IEnumerable<INetworkNodeProcessor<T>> nodes) : INetworkNodeProcessor<T>
 {
-    private readonly List<INetworkNodeProcessor<T>> _active = new();
+    private readonly List<INetworkNodeProcessor<T>> _active = [];
 
     private float _currentTime;
 
@@ -15,7 +15,7 @@ public class PooledNodeProcessor<T>(IEnumerable<INetworkNodeProcessor<T>> nodes)
 
     public float CompletionTime => GetCompletionTime();
 
-    public bool TryEnter(T item)
+    public virtual bool TryEnter(T item)
     {
         foreach (var node in nodes)
         {
@@ -31,7 +31,7 @@ public class PooledNodeProcessor<T>(IEnumerable<INetworkNodeProcessor<T>> nodes)
         return false;
     }
 
-    public bool TryExit()
+    public virtual bool TryExit()
     {
         for (int i = 0; i < _active.Count; i++)
         {

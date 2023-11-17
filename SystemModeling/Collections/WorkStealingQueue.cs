@@ -9,7 +9,7 @@ public class WorkStealingQueue<T>(int sizeDelta) : IQueue<T>
 {
     private event Action? OnChanged;
 
-    private readonly List<T> _list = new();
+    private readonly List<T> _list = [];
 
     private int _stolenCount;
 

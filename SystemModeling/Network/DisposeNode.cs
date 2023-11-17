@@ -26,9 +26,12 @@ public class DisposeNode<T> : NetworkNode<T>
 
     public override void DebugPrint(bool verbose = false)
     {
-        if (verbose)
-            Debug.WriteLine($"Average delta time: {AverageDeltaTime}");
-
         base.DebugPrint(verbose);
+
+        if (verbose)
+        {
+            Debug.WriteLine($"Average delta time: {AverageDeltaTime}");
+            Debug.WriteLine($"Processed items: {ProcessedCount}");
+        }      
     }
 }
