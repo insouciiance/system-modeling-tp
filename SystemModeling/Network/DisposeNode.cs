@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
+using SystemModeling.Extensions;
+using SystemModeling.Network.Statistics;
 
 namespace SystemModeling.Network;
 
-public class DisposeNode<T> : NetworkNode<T>
+public class DisposeNode<T>(IStatisticsPolicy<T> statisticsPolicy) : NetworkNode<T>(statisticsPolicy)
 {
     private float _deltaTimeSum;
 
@@ -19,7 +21,7 @@ public class DisposeNode<T> : NetworkNode<T>
         _deltaTimeSum += _currentTime - _previousEnterTime;
         _previousEnterTime = _currentTime;
 
-        ProcessedCount++;
+        statisticsPolicy.RecordConditional(this, _currentTime, () => ProcessedCount++);
     }
 
     public override void Exit() => throw new InvalidOperationException();

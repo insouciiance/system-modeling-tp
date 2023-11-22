@@ -2,7 +2,7 @@
 
 namespace SystemModeling.Example.CandyFactory.Candies;
 
-internal class ChocolateCandy : ICandy
+public class ChocolateCandy : ICandy
 {
     public ChocolateAdditives Additives { get; private set; }
 

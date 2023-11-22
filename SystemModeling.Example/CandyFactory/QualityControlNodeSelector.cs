@@ -36,7 +36,7 @@ internal sealed class QualityControlNodeSelector(DisposeNode<ICandy> finishedCan
 
     private NetworkNode<ICandy> GetNodeForGummyCandy(GummyCandy candy)
     {
-        float threshold = 0.05f + 0.01f * ((int)candy.Additives).SetBitsCount();
+        float threshold = 0.02f + 0.01f * ((int)candy.Additives).SetBitsCount();
         return Random.Shared.NextSingle() <= threshold ? defectiveCandy : finishedCandy;
     }
 }

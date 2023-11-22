@@ -2,12 +2,18 @@
 using System.Diagnostics;
 using System.Text;
 using SystemModeling.Collections;
+using SystemModeling.Extensions;
 using SystemModeling.Network.Processors;
 using SystemModeling.Network.Selectors;
+using SystemModeling.Network.Statistics;
 
 namespace SystemModeling.Network;
 
-public class ProcessNode<T>(INetworkNodeProcessor<T> nodeProcessor, IQueue<T> queue) : NetworkNode<T>
+public class ProcessNode<T>(
+    INetworkNodeProcessor<T> nodeProcessor,
+    IQueue<T> queue,
+    IStatisticsPolicy<T> statisticsPolicy)
+    : NetworkNode<T>(statisticsPolicy)
 {
     public IQueue<T> Queue { get; } = queue;
 
@@ -38,7 +44,8 @@ public class ProcessNode<T>(INetworkNodeProcessor<T> nodeProcessor, IQueue<T> qu
         }
 
         Debug.WriteLine($"{DebugName} Failure!");
-        FailuresCount++;
+
+        statisticsPolicy.RecordConditional(this, _currentTime, () => FailuresCount++);
     }
 
     public override void Exit()
@@ -71,7 +78,7 @@ public class ProcessNode<T>(INetworkNodeProcessor<T> nodeProcessor, IQueue<T> qu
 
         float delta = currentTime - _currentTime;
 
-        QueueWaitingTimeTotal += delta * Queue.Count;
+        statisticsPolicy.RecordConditional(this, currentTime, () => QueueWaitingTimeTotal += delta * Queue.Count);
 
         base.CurrentTimeUpdated(currentTime);
     }

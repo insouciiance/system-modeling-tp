@@ -6,7 +6,7 @@ using SystemModeling.Example.CandyFactory.Candies;
 
 namespace SystemModeling.Example.CandyFactory;
 
-internal class CandyFactoryStatRecorder
+public class CandyFactoryStatRecorder
 {
     public float Income { get; private set; }
 
@@ -32,9 +32,10 @@ internal class CandyFactoryStatRecorder
         DefectiveCandy[candy.GetType()]++;
     }
 
+    public float GetDefectiveCandyPercentage() => 100f * DefectiveCandyCount / (FinishedCandy + DefectiveCandyCount);
+
     public void DebugWriteStats()
     {
-        Trace.Listeners.Add(new ConsoleTraceListener());
         Debug.WriteLine($"Total income: {Income}");
         Debug.WriteLine($"Finished candy: {FinishedCandy}");
         Debug.WriteLine($"Defective candy: {DefectiveCandyCount}");

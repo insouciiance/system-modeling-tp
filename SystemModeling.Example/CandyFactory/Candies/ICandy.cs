@@ -1,6 +1,6 @@
 ﻿namespace SystemModeling.Example.CandyFactory.Candies;
 
-internal interface ICandy
+public interface ICandy
 {
     float GetPrice();
 }

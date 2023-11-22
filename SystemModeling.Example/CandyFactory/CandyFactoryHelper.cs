@@ -1,23 +1,28 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using SystemModeling.Collections;
 using SystemModeling.Example.CandyFactory.Candies;
+using SystemModeling.Extensions;
 using SystemModeling.Network;
 using SystemModeling.Network.Processors;
 using SystemModeling.Network.Selectors;
+using SystemModeling.Network.Statistics;
 using SystemModeling.Network.TimeProviders;
 
 namespace SystemModeling.Example.CandyFactory;
 
-internal static class CandyFactoryHelper
+public static class CandyFactoryHelper
 {
-    public static NetworkModel<ICandy> CreateModel()
+    public static NetworkModel<ICandy> CreateModel() => CreateModel(new DefaultStatisticsPolicy<ICandy>(), out _);
+
+    public static NetworkModel<ICandy> CreateModel(IStatisticsPolicy<ICandy> policy, out CandyFactoryStatRecorder statRecorder)
     {
-        DisposeNode<ICandy> finishedCandy = new()
+        DisposeNode<ICandy> finishedCandy = new(policy)
         {
             DebugName = "Produced Candies"
         };
 
-        DisposeNode<ICandy> defectiveCandy = new()
+        DisposeNode<ICandy> defectiveCandy = new(policy)
         {
             DebugName = "Defective Candies"
         };
@@ -25,7 +30,7 @@ internal static class CandyFactoryHelper
         QualityControlTimeProvider qualityControlTimeProvider = new();
         ThrowingQueue<ICandy> qualityControlQueue = new();
         PooledNodeProcessor<ICandy> qualityControlProcessor = new(InfiniteProcessors(qualityControlTimeProvider));
-        ProcessNode<ICandy> qualityControl = new(qualityControlProcessor, qualityControlQueue)
+        ProcessNode<ICandy> qualityControl = new(qualityControlProcessor, qualityControlQueue, policy)
         {
             DebugName = "Quality Control",
             NextNodeSelector = new QualityControlNodeSelector(finishedCandy, defectiveCandy)
@@ -34,7 +39,7 @@ internal static class CandyFactoryHelper
         UniformTimeProvider<ICandy> chocolateConveyorTimeProvider = new(0.5f, 0.6f);
         ThrowingQueue<ICandy> chocolateConveyorQueue = new();
         ChocolateConveyorProcessor chocolateConveyorProcessor = new(InfiniteProcessors(chocolateConveyorTimeProvider));
-        ProcessNode<ICandy> chocolateConveyor = new(chocolateConveyorProcessor, chocolateConveyorQueue)
+        ProcessNode<ICandy> chocolateConveyor = new(chocolateConveyorProcessor, chocolateConveyorQueue, policy)
         {
             DebugName = "Chocolate Conveyor",
             NextNodeSelector = new ConstantNodeSelector<ICandy>(qualityControl)
@@ -43,7 +48,7 @@ internal static class CandyFactoryHelper
         UniformTimeProvider<ICandy> caramelConveyorTimeProvider = new(0.7f, 0.8f);
         ThrowingQueue<ICandy> caramelConveyorQueue = new();
         CaramelConveyorProcessor caramelConveyorProcessor = new(InfiniteProcessors(caramelConveyorTimeProvider));
-        ProcessNode<ICandy> caramelConveyor = new(caramelConveyorProcessor, caramelConveyorQueue)
+        ProcessNode<ICandy> caramelConveyor = new(caramelConveyorProcessor, caramelConveyorQueue, policy)
         {
             DebugName = "Caramel Conveyor",
             NextNodeSelector = new ConstantNodeSelector<ICandy>(qualityControl)
@@ -52,7 +57,7 @@ internal static class CandyFactoryHelper
         UniformTimeProvider<ICandy> gummyConveyorTimeProvider = new(0.6f, 0.7f);
         ThrowingQueue<ICandy> gummyConveyorQueue = new();
         GummyConveyorProcessor gummyConveyorProcessor = new(InfiniteProcessors(gummyConveyorTimeProvider));
-        ProcessNode<ICandy> gummyConveyor = new(gummyConveyorProcessor, gummyConveyorQueue)
+        ProcessNode<ICandy> gummyConveyor = new(gummyConveyorProcessor, gummyConveyorQueue, policy)
         {
             DebugName = "Gummy Conveyor",
             NextNodeSelector = new ConstantNodeSelector<ICandy>(qualityControl)
@@ -61,7 +66,7 @@ internal static class CandyFactoryHelper
         ConstantTimeProvider<ICandy> incomingConveyorTimeProvider = new(1);
         ThrowingQueue<ICandy> incomingConveyorQueue = new();
         PooledNodeProcessor<ICandy> incomingConveyorProcessor = new(InfiniteProcessors(incomingConveyorTimeProvider));
-        ProcessNode<ICandy> incomingConveyor = new(incomingConveyorProcessor, incomingConveyorQueue)
+        ProcessNode<ICandy> incomingConveyor = new(incomingConveyorProcessor, incomingConveyorQueue, policy)
         {
             DebugName = "Incoming Conveyor",
             NextNodeSelector = new CreateCandyNodeSelector(chocolateConveyor, caramelConveyor, gummyConveyor)
@@ -70,18 +75,24 @@ internal static class CandyFactoryHelper
         CandyFactory factory = new();
         UniformTimeProvider<ICandy> createCandyTimeProvider = new(0.1f, 0.2f);
         ConstantNodeSelector<ICandy> createCandyNodeSelector = new(incomingConveyor);
-        CreateNode<ICandy> createCandy = new(factory, createCandyTimeProvider, createCandyNodeSelector)
+        CreateNode<ICandy> createCandy = new(factory, createCandyTimeProvider, createCandyNodeSelector, policy)
         {
             DebugName = "Incoming Candy"
         };
 
-        CandyFactoryStatRecorder statRecorder = new();
-        finishedCandy.OnEnter += (x, _) => statRecorder.RecordFinishedCandy(x);
-        defectiveCandy.OnEnter += (x, _) => statRecorder.RecordDefectiveCandy(x);
+        CandyFactoryStatRecorder recorder = new();
+        statRecorder = recorder;
+        finishedCandy.OnEnter += (x, t, p) => p.RecordConditional(finishedCandy, t, () => recorder.RecordFinishedCandy(x));
+        defectiveCandy.OnEnter += (x, t, p) => p.RecordConditional(defectiveCandy, t, () => recorder.RecordDefectiveCandy(x));
 
         NetworkModel<ICandy> model = new(createCandy, incomingConveyor, chocolateConveyor, caramelConveyor, gummyConveyor, qualityControl, defectiveCandy, finishedCandy);
 
-        model.DebugPrintExtra += statRecorder.DebugWriteStats;
+        model.DebugPrintExtra += () =>
+        {
+            Trace.Listeners.Add(new ConsoleTraceListener());
+            recorder.DebugWriteStats();
+            Trace.Listeners.Clear();
+        };
         
         return model;
     }

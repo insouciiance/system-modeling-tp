@@ -3,7 +3,7 @@
 namespace SystemModeling.Example.CandyFactory.Candies;
 
 [Flags]
-internal enum ChocolateAdditives
+public enum ChocolateAdditives
 {
     None = 0,
     Cookies = 1 << 0,

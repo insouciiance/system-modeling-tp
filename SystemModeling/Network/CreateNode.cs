@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using SystemModeling.Network.Factories;
 using SystemModeling.Network.Selectors;
+using SystemModeling.Network.Statistics;
 using SystemModeling.Network.TimeProviders;
 
 namespace SystemModeling.Network;
@@ -10,8 +11,9 @@ public class CreateNode<T>(
         IJobFactory<T> factory,
         IProcessingTimeProvider<T> timeProvider,
         INetworkNodeSelector<T> nodeSelector,
+        IStatisticsPolicy<T> statisticsPolicy,
         float completionTime = 0) 
-    : NetworkNode<T>
+    : NetworkNode<T>(statisticsPolicy)
 {
     private float _completionTime = completionTime;
 

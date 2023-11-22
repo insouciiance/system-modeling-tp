@@ -1,6 +1,6 @@
 ﻿namespace SystemModeling.Example.CandyFactory.Candies;
 
-internal enum CaramelAroma
+public enum CaramelAroma
 {
     Strawberry,
     Apricot
